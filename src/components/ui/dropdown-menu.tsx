@@ -9,6 +9,7 @@ import {
 } from "@radix-ui/react-icons"
 
 import { cn } from "@/lib/utils"
+import { cva } from "class-variance-authority"
 
 const DropdownMenu = DropdownMenuPrimitive.Root
 
@@ -79,18 +80,37 @@ const DropdownMenuContent = React.forwardRef<
 ))
 DropdownMenuContent.displayName = DropdownMenuPrimitive.Content.displayName
 
+// add new menu item variant
+const dropdownMenuItemVariants = cva(
+  "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+  {
+    variants: {
+      variant: {
+        default:
+          "focus:bg-accent focus:text-accent-foreground",
+        destructive:
+          "focus:bg-destructive focus:text-destructive-foreground text-destructive",
+      }
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  }
+)
+
+// replace previous classNames with the dropdownMenuItemVariants we created above.
 const DropdownMenuItem = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Item>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Item> & {
+    variant?: 'default' | 'destructive'
     inset?: boolean
   }
->(({ className, inset, ...props }, ref) => (
+>(({ variant, className, inset, ...props }, ref) => (
   <DropdownMenuPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-      inset && "pl-8",
-      className
+      dropdownMenuItemVariants({variant, className}),
+      inset && "pl-8"
     )}
     {...props}
   />
